@@ -1,6 +1,6 @@
 fs = require 'fs'
 
-Compiler = require './haml-coffee'
+Compiler = require ('./haml-coffee')
 
 if process.browser
   CoffeeScript = window.CoffeeScript
@@ -26,9 +26,10 @@ module.exports =
   # @return [Function] the template
   #
   render: (source, context = {}, options = {}) ->
+    context.render ?= module.exports.render
     # Ensure placement is set to standalone for static rendering.
     options.placement = 'standalone'
-    compiler = new Compiler(options)
+    compiler = new Compiler(options, context)
     compiler.parse source
 
     template = new Function CoffeeScript.compile(compiler.precompile(), bare: true)
@@ -50,7 +51,9 @@ module.exports =
 
     template = new Function CoffeeScript.compile(compiler.precompile(), bare: true)
 
-    (params) -> template.call params
+    (params) ->
+      params.render = module.exports.render
+      template.call params
 
   # Creates the JavaScript Template.
   #

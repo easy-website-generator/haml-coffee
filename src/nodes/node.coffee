@@ -1,4 +1,7 @@
 {escapeHTML} = require('../util/text')
+CoffeeScript = require('coffee-script')
+uglify       = require('uglify-js')
+
 
 # Base class for the syntax tree.
 #
@@ -143,6 +146,20 @@ module.exports = class Node
       cw      : @codeBlockLevel
       hw      : if @uglify then 0 else @blockLevel - @codeBlockLevel
       text    : if escape then escapeHTML(text) else text
+    }
+
+  # Creates a marker for inline CoffeScript .
+  #
+  # @param [String] the coffeescript that should be compiled into the page
+  # @param [Boolean] escape whether to escape the generated output
+  # @return [Object] the marker
+  #
+  markInlineCoffeeScript: (text, escape = false) ->
+    {
+      type    : 'text'
+      cw      : @codeBlockLevel
+      hw      : if @uglify then 0 else @blockLevel - @codeBlockLevel
+      text    : CoffeeScript.compile(text) #unless @uglify then CoffeeScript.compile(text) else uglify.minify(CoffeeScript.compile(text), {fromString: true, output: {}}).code
     }
 
   # Creates a marker for running CoffeeScript

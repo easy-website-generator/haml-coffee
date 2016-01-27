@@ -1,4 +1,12 @@
-# Haml Coffee Templates [![Build Status](https://secure.travis-ci.org/netzpirat/haml-coffee.png)](http://travis-ci.org/netzpirat/haml-coffee)
+# Haml Coffee Templates - enhanced
+
+## Creative-Workflow Disclaimer
+
+The original code comes from https://github.com/martynjames/haml-coffee and is quick and dirty hacked for being a usable ruby-haml alternative. For this reason we implemented '':inline-coffeescript'' for coffee usage for the rendered output and '':content-for''.
+
+At the moment it works with the new easy-website-generator which we will release soon. In the future we will rewrite the coffee-haml implementation for being more flexible and contribute this back to the community.
+
+## Original Description
 
 Haml Coffee is a JavaScript templating solution that uses [Haml](http://haml-lang.com/) as markup, understands inline
 [CoffeeScript](http://jashkenas.github.com/coffee-script/) and generates a JavaScript function that renders to HTML. It

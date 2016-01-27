@@ -529,6 +529,33 @@
             }
         },
 
+        "double quoted variable in a 'inline-coffeescript' filter (HTML)" : {
+            "haml_template" : "filters/inline-coffeescript",
+            "html_template" : "filters/inline-coffeescript",
+            "config" : {
+                "format" : "html5"
+            }
+        },
+
+        "single quoted variable in a 'inline-coffeescript' filter (HTML)" : {
+            "haml" : ":inline-coffeescript\n  message = 'hallo'",
+            "html" : "<script>\n(function() { var message; message = 'hallo'; }).call(this); \n</script>",
+            "config" : {
+                "format" : "html5"
+            }
+        },
+
+        "content-for filter (HTML) works" : {
+            "haml_template" : "filters/content-for",
+            "html_template" : "filters/content-for",
+            "config" : {
+                "format" : "html5",
+                "locals" : {
+                  "var" : "value"
+                }
+            }
+        },
+
         "content in a 'javascript' filter (HTML)" : {
             "haml" : ":javascript\n  a();\n%p",
             "html" : "<script>\n  a();\n</script>\n<p></p>",

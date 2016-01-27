@@ -39,19 +39,20 @@ module.exports = class HamlCoffee
   # @option options [String] customPreserve the name of the function used to preserve the whitespace
   # @option options [String] customReference the name of the function used to create the id from object references
   #
-  constructor: (@options = {}) ->
+  constructor: (@options = {}, context = {}) ->
     @options.placement          ?= 'global'
     @options.dependencies       ?= { hc: 'hamlcoffee' }
-    @options.escapeHtml         ?= true
-    @options.escapeAttributes   ?= true
+    @options.escapeHtml         ?= false
+    @options.escapeAttributes   ?= false
     @options.cleanValue         ?= true
     @options.uglify             ?= false
     @options.basename           ?= false
-    @options.extendScope        ?= false
+    @options.extendScope        ?= true
     @options.format             ?= 'html5'
     @options.hyphenateDataAttrs ?= true
     @options.preserveTags       ?= 'pre,textarea'
     @options.selfCloseTags      ?= 'meta,img,link,br,hr,input,area,param,col,base'
+    @context = context
 
     if @options.placement is 'global'
       @options.name      ?= 'test'
@@ -184,8 +185,8 @@ module.exports = class HamlCoffee
     options = @getNodeOptions()
 
     # Detect filter node
-    if expression.match(/^:(escaped|preserve|css|javascript|plain|cdata|coffeescript)/)
-      node = new Filter(expression, options)
+    if expression.match(/^:(escaped|preserve|css|javascript|plain|cdata|coffeescript|inline-coffeescript|content-for)/)
+      node = new Filter(expression, options, @context)
 
     # Detect comment node
     else if expression.match(/^(\/|-#)(.*)/)

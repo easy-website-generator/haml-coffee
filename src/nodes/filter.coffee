@@ -1,4 +1,4 @@
-Node = require('./node')
+Node = require './node'
 
 {whitespace}    = require('../util/text')
 {unescapeQuotes} = require('../util/text')
@@ -15,12 +15,18 @@ Node = require('./node')
 # Only the top level filter marker is a filter node, containing
 # child nodes are text nodes.
 #
+
 module.exports = class Filter extends Node
+  constructor: (@expression = '', options = {}, context = {}) ->
+    super @expression, options
+    @context = context
 
   # Evaluate the Haml filters
   #
   evaluate: ->
-    @filter = @expression.match(/:(escaped|preserve|css|javascript|coffeescript|plain|cdata|coffeescript)(.*)?/)?[1]
+    match = @expression.match(/:(escaped|preserve|css|javascript|coffeescript|plain|cdata|inline-coffeescript|content-for)(.*)?/)
+    @filter = match?[1]
+    @params = match?[2]
 
   # Render the filter
   #
@@ -69,6 +75,54 @@ module.exports = class Filter extends Node
         output.push @markText('  //]]>') if @format is 'xhtml'
         output.push @markText('</script>')
 
+      when 'inline-coffeescript'
+        if @format is 'html5'
+          output.push @markText('<script>')
+        else
+          output.push @markText('<script type=\'text/javascript\'>')
+
+        output.push @markText('  //<![CDATA[') if @format is 'xhtml'
+
+        @renderFilterContent(0, output, 'inline-coffeescript')
+
+        output.push @markText('  //]]>') if @format is 'xhtml'
+        output.push @markText('</script>')
+
+      when 'content-for'
+        unless @context.hasOwnProperty '__contentFor'
+          console.log 'init __contentFor'
+          @context.__contentFor = {}
+
+        @contentForKey = @params.trim()
+        childNonEmptyExpressions = 0
+        for key, vars of @children
+          ++childNonEmptyExpressions if vars.expression.length > 0
+
+        if childNonEmptyExpressions > 0
+          console.log "-> write content-for #{@contentForKey}"
+          tmp = []
+          tmp.push(child.expression) for child in @children
+          @context.__contentFor[@contentForKey] = tmp.join("\n")
+
+        else
+          if @context.__contentFor.hasOwnProperty @contentForKey
+            console.log "<- read content-for #{@contentForKey}"
+
+            @context.__contentFor[@contentForKey] = @context.render(
+              @context.__contentFor[@contentForKey], @context, {
+                escapeHtml: false
+                escapeAttributes: false
+                })
+
+            output.push @markText("EWG_CONTENT_FOR_PLACEHOLDER_#{@contentForKey}")
+
+
+          else
+            console.log "!! missing content-for #{@contentForKey}"
+
+
+
+
       when 'cdata'
         output.push @markText('<![CDATA[')
         @renderFilterContent(2, output)
@@ -89,6 +143,11 @@ module.exports = class Filter extends Node
     empty   = 0
 
     content.push(child.render()[0].text) for child in @children
+
+    if type == 'inline-coffeescript'
+      tmp = content.join("\n")
+      output.push @markInlineCoffeeScript("#{unescapeQuotes(tmp)}")
+      return
 
     for line in content
       if line is ''
