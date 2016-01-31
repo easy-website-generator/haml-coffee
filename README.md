@@ -1,8 +1,8 @@
 # Haml Coffee Templates - enhanced
 
-## Creative-Workflow Disclaimer
+## Creative-Workflow - Addition
 
-The original code comes from https://github.com/martynjames/haml-coffee and is quick and dirty hacked for being a usable ruby-haml alternative. For this reason we implemented '':inline-coffeescript'' for coffee usage for the rendered output and '':content-for''.
+The original code comes from https://github.com/martynjames/haml-coffee and is quick and dirty hacked for being a usable ruby-haml alternative. For this reason we implemented ``:inline-coffeescript`` for coffee usage for the rendered output and ``:content-for``.
 
 At the moment it works with the new easy-website-generator which we will release soon. In the future we will rewrite the coffee-haml implementation for being more flexible and contribute this back to the community.
 
